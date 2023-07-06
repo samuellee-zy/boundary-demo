@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     aws = {
-      version = ">= 4.0.0"
+      version = "< 5.0.0"
       source  = "hashicorp/aws"
     }
     hcp = {
@@ -28,9 +28,9 @@ terraform {
     }
   }
   cloud {
-    organization = "swhashi"
+    organization = "samuellee-dev"
     workspaces {
-      name = "boundary-demo-eks"
+      name = "boundary-demo"
     }
   }
 }
@@ -42,10 +42,10 @@ provider "aws" {
 provider "tfe" {}
 
 provider "boundary" {
-  addr                            = data.tfe_outputs.boundary_demo_init.values.boundary_url
-  auth_method_id                  = data.tfe_outputs.boundary_demo_init.values.boundary_admin_auth_method
-  password_auth_method_login_name = "samuellee-user"
-  password_auth_method_password   = "Demo1234"
+  addr                   = data.tfe_outputs.boundary_demo_init.values.boundary_url
+  auth_method_id         = data.tfe_outputs.boundary_demo_init.values.boundary_admin_auth_method
+  auth_method_login_name = var.boundary_user
+  auth_method_password   = var.boundary_password
 }
 
 provider "kubernetes" {

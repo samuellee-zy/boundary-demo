@@ -47,7 +47,7 @@ data "aws_ami" "windows" {
 }
 
 data "aws_key_pair" "aws_key_name" {
-  key_name = var.aws_key_name
+  key_name = "boundary-demo"
 }
 
 data "tfe_outputs" "boundary_demo_init" {

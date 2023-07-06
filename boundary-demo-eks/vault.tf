@@ -212,6 +212,8 @@ resource "vault_database_secrets_mount" "postgres" {
     verify_connection = true
     allowed_roles     = ["db1"]
   }
+  default_lease_ttl_seconds = 120
+  max_lease_ttl_seconds     = 300
 }
 
 # Create role for getting dynamic DB secrets
@@ -225,4 +227,25 @@ resource "vault_database_secret_backend_role" "db1" {
     "CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';",
     "GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";",
   ]
+}
+
+resource "vault_mount" "transit" {
+  path                      = "transit"
+  type                      = "transit"
+  description               = "Transit Secrets Engine for Encryption as a Service"
+  default_lease_ttl_seconds = 3600
+  max_lease_ttl_seconds     = 86400
+}
+
+resource "vault_transit_secret_backend_key" "key" {
+  backend          = vault_mount.transit.path
+  name             = "demo_key"
+  type             = "aes256-gcm96"
+  deletion_allowed = true
+}
+
+resource "vault_mount" "kvv2" {
+  path        = "kvv2"
+  type        = "kv-v2"
+  description = "KVV2 Secrets Engine for Static Secrets Storage"
 }
